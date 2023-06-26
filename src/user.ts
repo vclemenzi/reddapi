@@ -26,8 +26,8 @@ class User {
 
   public async getBasicInfo(): Promise<{
     name: string;
-    karma: string;
-    joined: string;
+    karma: number;
+    joined: number;
   }> {
     const page = await this.browser.newPage();
     await page.goto(`https://www.reddit.com/user/${this.name}`);
@@ -38,7 +38,7 @@ class User {
         : true;
     });
 
-    if (!srExist) return { name: "", karma: "", joined: "" };
+    if (!srExist) return { name: "", karma: "", joined: 0 };
 
     const [name, karma, joined] = await Promise.all([
       page.evaluate(() => {
@@ -59,8 +59,8 @@ class User {
 
     return {
       name,
-      karma,
-      joined,
+      karma: karma,
+      joined: Math.floor(new Date(joined).getTime() / 1000),
     };
   }
 }
