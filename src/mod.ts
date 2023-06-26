@@ -1,6 +1,7 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
 import { subreddit } from "./subreddit.ts";
+import { user } from "./user.ts";
 
 const router = new Router();
 const browser = await puppeteer.launch();
@@ -42,6 +43,14 @@ router
     ctx.response.headers.set("Content-Type", "application/json");
     ctx.response.status = 200;
     ctx.response.body = JSON.stringify(await sr.getHotPosts());
+  })
+  .get("/u/:name", async (ctx) => {
+    const { name } = ctx.params;
+    const usr = user(name, { browser: browser });
+
+    ctx.response.headers.set("Content-Type", "application/json");
+    ctx.response.status = 200;
+    ctx.response.body = JSON.stringify(await usr.getBasicInfo());
   });
 
 const app = new Application();
