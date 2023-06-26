@@ -117,6 +117,115 @@ class Subreddit {
 
     return posts;
   }
+
+  public async getNewPosts(): Promise<
+    { title: string; image: string | null }[]
+  > {
+    const page = await this.browser.newPage();
+    await page.goto(`https://www.reddit.com/r/${this.name}/new`);
+
+    const srExist = await page.evaluate(() => {
+      return document.querySelectorAll("._1oQyIsiPHYt6nx7VOmd1sz").length > 0;
+    });
+
+    if (!srExist) {
+      await page.close();
+      return [{ title: "", image: null }];
+    }
+
+    const posts = await page.evaluate(async () => {
+      const postElements = Array.from(
+        document.querySelectorAll("._1oQyIsiPHYt6nx7VOmd1sz"),
+      );
+
+      const titlePromises = postElements.map((postElement) => {
+        const titleElement = postElement.querySelector(
+          "._eYtD2XCVieq6emjKBH3m",
+        );
+        return titleElement ? titleElement.innerText : "";
+      });
+
+      const mediaPromises = postElements.map((postElement) => {
+        const videoElement = postElement.querySelector(
+          ".tErWI93xEKrI2OkozPs7J",
+        );
+        if (videoElement) {
+          const sourceElement = videoElement.querySelector("source");
+          return sourceElement ? sourceElement.src : null;
+        }
+        const imageElement = postElement.querySelector(
+          "._2_tDEnGMLxpM6uOa2kaDB3",
+        );
+        return imageElement ? imageElement.src : null;
+      });
+
+      const titles = await Promise.all(titlePromises);
+      const media = await Promise.all(mediaPromises);
+
+      return titles.map((t, i) => {
+        return { title: t, image: media[i] };
+      });
+    });
+
+    await page.close();
+
+    return posts;
+  }
+
+  public async getTopPosts(): Promise<
+    { title: string; image: string | null }[]
+  > {
+    const page = await this.browser.newPage();
+    await page.goto(`https://www.reddit.com/r/${this.name}/top`);
+
+    const srExist = await page.evaluate(() => {
+      return document.querySelectorAll("._1oQyIsiPHYt6nx7VOmd1sz").length > 0;
+    });
+
+    if (!srExist) {
+      await page.close();
+      return [{ title: "", image: null }];
+    }
+
+    const posts = await page.evaluate(async () => {
+      const postElements = Array.from(
+        document.querySelectorAll("._1oQyIsiPHYt6nx7VOmd1sz"),
+      );
+
+      const titlePromises = postElements.map((postElement) => {
+        const titleElement = postElement.querySelector(
+          "._eYtD2XCVieq6emjKBH3m",
+        );
+        return titleElement ? titleElement.innerText : "";
+      });
+
+      const mediaPromises = postElements.map((postElement) => {
+        const videoElement = postElement.querySelector(
+          ".tErWI93xEKrI2OkozPs7J",
+        );
+        if (videoElement) {
+          const sourceElement = videoElement.querySelector("source");
+          return sourceElement ? sourceElement.src : null;
+        }
+        const imageElement = postElement.querySelector(
+          "._2_tDEnGMLxpM6uOa2kaDB3",
+        );
+        return imageElement ? imageElement.src : null;
+      });
+
+      const titles = await Promise.all(titlePromises);
+      const media = await Promise.all(mediaPromises);
+
+      return titles.map((t, i) => {
+        return { title: t, image: media[i] };
+      });
+    });
+
+    await page.close();
+
+    return posts;
+  }
+
 }
 
 export function subreddit(name: string, pptr: { browser: Browser }) {

@@ -26,6 +26,22 @@ router
     ctx.response.headers.set("Content-Type", "application/json");
     ctx.response.status = 200;
     ctx.response.body = JSON.stringify(await sr.getHotPosts());
+  })
+  .get("/r/:name/new", async (ctx) => {
+    const { name } = ctx.params;
+    const sr = subreddit(name, { browser: browser });
+
+    ctx.response.headers.set("Content-Type", "application/json");
+    ctx.response.status = 200;
+    ctx.response.body = JSON.stringify(await sr.getHotPosts());
+  })
+  .get("/r/:name/top", async (ctx) => {
+    const { name } = ctx.params;
+    const sr = subreddit(name, { browser: browser });
+
+    ctx.response.headers.set("Content-Type", "application/json");
+    ctx.response.status = 200;
+    ctx.response.body = JSON.stringify(await sr.getHotPosts());
   });
 
 const app = new Application();
