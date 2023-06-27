@@ -12,7 +12,7 @@ class User {
   /*
    * @deprecated To speed up taking data from reddit this method will be implemented in each method so that the page will load only once
    */
-  public async exist(): boolean {
+  public async exist(): Promise<boolean> {
     const page = await this.browser.newPage();
     await page.goto(`https://www.reddit.com/user/${this.name}`);
     const srExist = await page.evaluate(() => {
@@ -26,7 +26,7 @@ class User {
 
   public async getBasicInfo(): Promise<{
     name: string;
-    karma: number;
+    karma: string;
     joined: number;
   }> {
     const page = await this.browser.newPage();
