@@ -21,6 +21,8 @@ class Subreddit {
         : true;
     });
 
+    await page.close();
+
     return srExist;
   }
 
@@ -38,7 +40,10 @@ class Subreddit {
         : true;
     });
 
-    if (!srExist) return { name: "", members: "", online: "" };
+    if (!srExist) {
+      await page.close();
+      return { name: "", members: "", online: "" };
+    }
 
     const [name, members, online] = await Promise.all([
       page.evaluate(() => {
@@ -225,7 +230,6 @@ class Subreddit {
 
     return posts;
   }
-
 }
 
 export function subreddit(name: string, pptr: { browser: Browser }) {

@@ -21,6 +21,7 @@ class User {
         : true;
     });
 
+    await page.close();
     return srExist;
   }
 
@@ -38,7 +39,10 @@ class User {
         : true;
     });
 
-    if (!srExist) return { name: "", karma: "", joined: 0 };
+    if (!srExist) {
+      await page.close();
+      return { name: "", karma: "", joined: 0 };
+    }
 
     const [name, karma, joined] = await Promise.all([
       page.evaluate(() => {
